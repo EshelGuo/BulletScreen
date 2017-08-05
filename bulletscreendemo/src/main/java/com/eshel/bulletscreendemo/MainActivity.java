@@ -30,11 +30,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		parent = (FrameLayout) findViewById(R.id.parent);
-		mBulletScreens = BulletScreens.getInstance(parent);
+		mBulletScreens = BulletScreens.newInstance(parent);
 		// 设置如果没有要执行的任务或屏幕上没有空间,多久重新检测是否能执行任务
 		mBulletScreens.setSleepTime(300);
-		mList = new ArrayList();
-		for (int i = 0; i < 20; i++) {
+		if(mList == null)
+			mList = new ArrayList();
+		mList.clear();
+		for (int i = 0; i < 10; i++) {
 			mList.add(new BulletContent("hello world"+i));
 		}
 		//添加数据
@@ -85,7 +87,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		if(!TextUtils.isEmpty(content)){
 			if(content.equals("again")){
 				mBulletScreens.addDatas(mList);
-			}else {
+			}else if(content.equals("stop")){
+				mBulletScreens.stop();
+			} else {
 				mBulletScreens.addData(new BulletContent(content));
 			}
 			mEditText.setText("");

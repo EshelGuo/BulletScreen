@@ -21,6 +21,7 @@ public class BulletScreenView extends RelativeLayout{
 	private ViewGroup mParent;
 	private BulletScreenScrollListener mListener;
 	private ScrollTask mScrollTask;
+	public BulletScreens.BulletsTask task;
 
 	public BulletScreenView(Context context) {
 		this(context,null);
@@ -63,15 +64,15 @@ private int mCurrentLocationY;
 	public class ScrollTask implements Runnable{
 
 		private int mParentWidth;
-		private int mParentHeight;
+//		private int mParentHeight;
 
 		public ScrollTask(ViewGroup parent) {
 //			start(parent);
 		}
 
 		private void start(ViewGroup parent) {
-			mParentWidth = parent.getMeasuredWidth();
-			mParentHeight = parent.getMeasuredHeight();
+			mParentWidth = parent.getWidth();
+//			mParentHeight = parent.getMeasuredHeight();
 			mCurrentLocationX = mParentWidth;
 			beginNextScrolled = false;
 			setY(mCurrentLocationY);
@@ -79,7 +80,7 @@ private int mCurrentLocationY;
 
 		@Override
 		public void run() {
-			if(mCurrentLocationX + getWidth() < 0){
+			if(mCurrentLocationX + getWidth() < 0 || (task != null && task.isStop)){
 				if(mListener != null)
 					mListener.endScroll();
 				return;
@@ -129,4 +130,5 @@ private int mCurrentLocationY;
 	public void setBeginNextWidth(int beginNextWidth) {
 		this.beginNextWidth = beginNextWidth;
 	}
+
 }

@@ -53,16 +53,16 @@ public class BulletScreens implements ViewTreeObserver.OnGlobalLayoutListener {
 		mBulletYQueue = new BulletYQueue();
 		mContentQueue = new BulletContentQueue();
 	}
-	public static BulletScreens getInstance(ViewGroup bulletScreenParent){
-		if(mBulletScreens == null){
+	public static BulletScreens newInstance(ViewGroup bulletScreenParent){
+/*		if(mBulletScreens == null){
 			synchronized (BulletScreens.class){
-				if(mBulletScreens == null){
+				if(mBulletScreens == null){*/
 					mBulletScreens = new BulletScreens(bulletScreenParent);
-				}
-			}
-		}else {
-			mBulletScreens.parent = bulletScreenParent;
-		}
+			/*	}
+			}*/
+//		}else {
+//			mBulletScreens.parent = bulletScreenParent;
+//		}
 		return mBulletScreens;
 	}
 
@@ -70,6 +70,7 @@ public class BulletScreens implements ViewTreeObserver.OnGlobalLayoutListener {
 		if(mObtainBulletScreenView == null) {
 			throw new MastObtainBulletScreenViewException("setObtainBulletScreenView 方法必须被设置, 作用是创建 BulletScreenView(即指定每一条弹幕的样式)");
 		}else {
+			task = new BulletsTask();
 			parent.getViewTreeObserver().addOnGlobalLayoutListener(this);
 		}
 	}
@@ -97,14 +98,15 @@ public class BulletScreens implements ViewTreeObserver.OnGlobalLayoutListener {
 		mBulletScreenQueue.inQueue(bulletScreenView);
 	}
 
-	BulletsTask task = new BulletsTask();
+	BulletsTask task;
 	class BulletsTask implements Runnable{
-		boolean isStop = false;
+		public boolean isStop = false;
 		@Override
 		public void run() {
 			while (true) {
-				if (isStop)
+				if (isStop) {
 					return;
+				}
 				if (mContentQueue.isEmpty()) {
 					SystemClock.sleep(sleepTime);
 				} else {
@@ -184,11 +186,16 @@ public class BulletScreens implements ViewTreeObserver.OnGlobalLayoutListener {
 	}
 
 	private BulletScreenView getBulletScreenView(){
+		BulletScreenView bulletScreenView;
+
 		if(mBulletScreenQueue.isEmpty()){
-			return mObtainBulletScreenView.obtain();
+			bulletScreenView = mObtainBulletScreenView.obtain();
 		}else{
-			return mBulletScreenQueue.outQueue();
+			bulletScreenView = mBulletScreenQueue.outQueue();
 		}
+
+		bulletScreenView.task = task;
+		return bulletScreenView;
 	}
 
 	public void stop(){
